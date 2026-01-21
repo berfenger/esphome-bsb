@@ -12,7 +12,7 @@ CODEOWNERS = ["@eringerli"]
 MULTI_CONF = True
 
 DEPENDENCIES = ["uart"]
-AUTO_LOAD = ["sensor", "text_sensor", "select"] #, "switch", "binary_sensor"
+AUTO_LOAD = ["sensor", "text_sensor", "select", "button"] #, "switch", "binary_sensor"
 CONF_BSB_ID = "bsb_id"
 CONF_PARAMETER_NUMBER = "parameter_number"
 CONF_SOURCE_ADDRESS = "source_address"
@@ -28,7 +28,8 @@ CONF_BSB_TYPE_ENUM = {
     "INT16":2,
     "INT32":3,
     "TEMPERATURE":4,
-    "ROOMTEMPERATURE":5
+    "ROOMTEMPERATURE":5,
+    "DATETIME":6
 }
 
 bsb_ns = cg.esphome_ns.namespace("bsb")

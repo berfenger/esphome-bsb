@@ -35,8 +35,10 @@ namespace esphome {
       void  loop() override;
       float get_setup_priority() const override { return setup_priority::DATA; };
 
-      void set_source_address( uint32_t val ) { source_address_ = val; }
-      void set_destination_address( uint32_t val ) { destination_address_ = val; }
+      void           set_source_address( uint32_t val ) { source_address_ = val; }
+      const uint8_t  get_source_address() const { return source_address_; }
+      void           set_destination_address( uint32_t val ) { destination_address_ = val; }
+      const uint8_t  get_destination_address() const { return destination_address_; }
 
       void set_query_interval( uint32_t val ) { query_interval_ = val; }
 
@@ -49,10 +51,10 @@ namespace esphome {
       void register_number( BsbNumberBase* number ) { this->numbers_.insert( { number->get_field_id(), number } ); }
       void register_select( BsbSelect* select ) { this->selects_.insert( { select->get_field_id(), select } ); }
 
+      void write_packet( const BsbPacket& packet );
+
     protected:
       void callback_packet( const BsbPacket* packet );
-
-      void write_packet( const BsbPacket& packet );
 
       BsbPacketReceive bsbPacketReceive = BsbPacketReceive( [&]( const BsbPacket* packet ) { callback_packet( packet ); } );
 

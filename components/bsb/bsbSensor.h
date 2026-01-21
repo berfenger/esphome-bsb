@@ -20,7 +20,7 @@ namespace esphome {
 
     enum SensorType { Sensor, TextSensor, BinarySensor };
 
-    enum class BsbSensorValueType { UInt8, Int8, Int16, Int32, Temperature, RoomTemperature };
+    enum class BsbSensorValueType { UInt8, Int8, Int16, Int32, Temperature, RoomTemperature, DateTime };
 
     class BsbSensorBase {
     public:

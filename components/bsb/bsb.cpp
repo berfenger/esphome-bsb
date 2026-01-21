@@ -184,7 +184,9 @@ namespace esphome {
               case SensorType::TextSensor: {
                 BsbTextSensor* bsbSensor = ( BsbTextSensor* )sensor->second;
                 bsbSensor->schedule_next_regular_update( millis() );
-                if (bsbSensor->has_enum_mapping()) {
+                if (bsbSensor->get_value_type() == BsbSensorValueType::DateTime) {
+                  bsbSensor->set_value( packet->parse_as_datetime() );
+                } else if (bsbSensor->has_enum_mapping()) {
                   bsbSensor->set_value_int( packet->parse_as_int8() );
                 } else {
                   bsbSensor->set_value( packet->parse_as_text() );

@@ -169,6 +169,37 @@ namespace esphome {
         return str;
       }
 
+      std::string parse_as_datetime() const {
+        // VT_DATETIME payload: 9 bytes
+        // Byte 0: flag (0 = valid)
+        // Byte 1: year - 1900
+        // Byte 2: month
+        // Byte 3: day
+        // Byte 4: day of week
+        // Byte 5: hour
+        // Byte 6: minute
+        // Byte 7: second
+        if( payload.size() != 9 ) {
+          return "";
+        }
+
+        uint8_t flag = payload[0];
+        if( flag != 0x00 ) {
+          return "---";
+        }
+
+        char str[25];
+        snprintf( str, 25, "%02u.%02u.%04u %02u:%02u:%02u",
+                  payload[3],           // day
+                  payload[2],           // month
+                  payload[1] + 1900,    // year
+                  payload[5],           // hour
+                  payload[6],           // minute
+                  payload[7] );         // second
+
+        return str;
+      }
+
       void create_packet() {
         buffer.clear();
         lenght = PacketSizeWithoutPyload + payload.size();

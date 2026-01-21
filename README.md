@@ -85,6 +85,40 @@ This is the main way to get data *out* of the heating system.
 | `field_id` | required | | the uint32 of the field ID, pe `0x053D0001` |
 | `parameter_number` | optional |  | this is not used currently, but it is good to document this number in the YAML. |
 | `update_interval` | optional | 15min | interval to refresh the value from the heating system. Beware that reading a lot of data with an high update frequency can overload the heating system or the bus |
+| `type` | optional | | set to `DATETIME` to parse datetime values (parameter 0) |
+| `options` | optional | | mapping of numeric values to string options for enum parameters |
+
+### Datetime
+To read the current date/time from the heating system, use `type: datetime`:
+
+```yaml
+text_sensor:
+  - platform: bsb
+    bsb_id: bsb1
+    field_id: 0x053D000B
+    parameter_number: 0
+    type: datetime
+    name: Heater Time
+    update_interval: 5min
+    icon: mdi:clock-outline
+```
+
+### Enum Mapping
+For enum parameters (like status values), you can map numeric values to human-readable strings:
+
+```yaml
+text_sensor:
+  - platform: bsb
+    bsb_id: bsb1
+    field_id: 0x2D3D0574
+    parameter_number: 700
+    name: Operating Mode
+    options:
+      0: "Protection"
+      1: "Automatic"
+      2: "Reduced"
+      3: "Comfort"
+```
 
 ## Selects
 Selects allow setting enum parameters with human-readable options. The component maps numeric values from the BSB bus to string options.
@@ -129,6 +163,30 @@ This is the main way to get data *into* the heating system.
 | `step` | required | | the step in the frontend |
 | `min_value` | required | | the min value in the frontend |
 | `max_value` | required | | the max value in the frontend |
+
+## Buttons
+Buttons allow triggering actions. Currently, the main use case is syncing the datetime from ESPHome to the heating system.
+
+| Key | Class | Default | Description |
+| --- | --- | --- | --- |
+| `bsb_id` | required | | the BSB bus |
+| `field_id` | required | | the uint32 of the field ID, e.g. `0x053D000B` for datetime |
+| `time_id` | required | | reference to a `time` component (e.g. Home Assistant time or SNTP) |
+
+Example for syncing time:
+```yaml
+time:
+  - platform: homeassistant
+    id: ha_time
+
+button:
+  - platform: bsb
+    bsb_id: bsb1
+    field_id: 0x053D000B
+    time_id: ha_time
+    name: Sync Heater Time
+    icon: mdi:clock-check
+```
 
 ### INF/Broadcast
 Some values have to be sent as INF telegrams, like the room or the outside temperature. For my heating systems (and apparently many others too), you have to send the room temperature as an INF with the special type `ROOMTEMPERATURE`, but the outside temperature with the type `TEMPERATURE`. And INF telegrams don't get ack'ed from the heating system, so some experimentation is needed. 

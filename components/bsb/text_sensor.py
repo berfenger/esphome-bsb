@@ -22,6 +22,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_PARAMETER_NUMBER, default="0"): cv.positive_int,
             cv.Optional(CONF_UPDATE_INTERVAL, default="15min"): cv.update_interval,
             cv.Optional(CONF_OPTIONS): cv.Schema({cv.int_: cv.string}),
+            cv.Optional(CONF_BSB_TYPE): cv.enum(CONF_BSB_TYPE_ENUM, upper=True),
         }
     ),
     cv.has_exactly_one_key(CONF_FIELD_ID),
