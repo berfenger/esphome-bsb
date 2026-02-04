@@ -45,41 +45,63 @@ namespace esphome {
 
       bool is_ready_to_update( const uint32_t timestamp ) {
         if( sent_get_ >= 5 ) {
-          ESP_LOGE( TAG, "BsbNumber Get %08X: retries exhausted, next try in %fs ", get_field_id(), retry_interval_ms_ / 1000. );
-
-          if( timestamp >= ( next_update_timestamp_ + retry_interval_ms_ ) ) {
-            ESP_LOGE( TAG, "BsbNumber Set %08X: retrying", get_field_id(), retry_interval_ms_ / 1000. );
+          if( !logged_get_exhaustion_ ) {
+            ESP_LOGW( TAG, "BsbNumber Get %08X: retries exhausted, waiting %.0fs before retry", get_field_id(), retry_interval_ms_ / 1000. );
+            logged_get_exhaustion_ = true;
+            retry_get_start_timestamp_ = timestamp;
+          }
+          if( timestamp >= ( retry_get_start_timestamp_ + retry_interval_ms_ ) ) {
+            ESP_LOGI( TAG, "BsbNumber Get %08X: retrying after wait", get_field_id() );
             sent_get_ = 0;
+            logged_get_exhaustion_ = false;
             return true;
           }
+          return false;
         }
-        return ( sent_get_ < 5 ) && ( !broadcast_ && timestamp >= next_update_timestamp_ );
+        return !broadcast_ && timestamp >= next_update_timestamp_;
       }
 
       bool is_ready_to_set( const uint32_t timestamp ) {
         if( sent_set_ >= 5 ) {
-          ESP_LOGE( TAG, "BsbNumber Set %08X: retries exhausted, next try in %fs ", get_field_id(), retry_interval_ms_ / 1000. );
-
-          if( timestamp >= ( next_update_timestamp_ + retry_interval_ms_ ) ) {
-            ESP_LOGE( TAG, "BsbNumber Set %08X: retrying", get_field_id(), retry_interval_ms_ / 1000. );
+          if( !logged_set_exhaustion_ ) {
+            set_retry_cycles_++;
+            if( set_retry_cycles_ >= 3 ) {
+              ESP_LOGE( TAG, "BsbNumber Set %08X: giving up after %d retry cycles", get_field_id(), set_retry_cycles_ );
+              dirty_ = false;
+              sent_set_ = 0;
+              set_retry_cycles_ = 0;
+              return false;
+            }
+            ESP_LOGW( TAG, "BsbNumber Set %08X: retries exhausted (cycle %d/3), waiting %.0fs before retry", get_field_id(), set_retry_cycles_, retry_interval_ms_ / 1000. );
+            logged_set_exhaustion_ = true;
+            retry_set_start_timestamp_ = timestamp;
+          }
+          if( timestamp >= ( retry_set_start_timestamp_ + retry_interval_ms_ ) ) {
+            ESP_LOGI( TAG, "BsbNumber Set %08X: retrying after wait", get_field_id() );
             sent_set_ = 0;
+            logged_set_exhaustion_ = false;
             return true;
           }
+          return false;
         }
-        return ( sent_set_ < 5 ) && dirty_ /*|| ( broadcast_ && timestamp >= next_update_timestamp_ )*/;
+        return dirty_;
       }
 
       void schedule_next_regular_update( const uint32_t timestamp ) {
         sent_get_              = 0;
+        logged_get_exhaustion_ = false;
         next_update_timestamp_ = timestamp + update_interval_ms_;
       }
       void schedule_next_update( const uint32_t timestamp, const uint32_t interval ) {
         sent_get_              = 0;
+        logged_get_exhaustion_ = false;
         next_update_timestamp_ = timestamp + interval;
       }
 
       void reset_dirty() {
         sent_set_ = 0;
+        set_retry_cycles_ = 0;
+        logged_set_exhaustion_ = false;
         dirty_    = false;
       }
 
@@ -147,10 +169,15 @@ namespace esphome {
       uint8_t  retry_count_;
 
       uint32_t next_update_timestamp_ = 0;
+      uint32_t retry_get_start_timestamp_ = 0;
+      uint32_t retry_set_start_timestamp_ = 0;
 
       uint16_t sent_set_ = 0;
       uint16_t sent_get_ = 0;
+      uint8_t  set_retry_cycles_ = 0;
       bool     dirty_    = false;
+      bool     logged_get_exhaustion_ = false;
+      bool     logged_set_exhaustion_ = false;
     };
 
     class BsbNumber

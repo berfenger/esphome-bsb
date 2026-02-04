@@ -41,19 +41,26 @@ namespace esphome {
 
       const bool is_ready( const uint32_t timestamp ) {
         if( sent_get_ >= 5 ) {
-          ESP_LOGE( TAG, "BsbNumber Get %08X: retries exhausted, next try in %fs ", get_field_id(), retry_interval_ms_ / 1000. );
-          if( timestamp >= ( next_update_timestamp_ + retry_interval_ms_ ) ) {
-            ESP_LOGE( TAG, "BsbNumber Set %08X: retrying", get_field_id(), retry_interval_ms_ / 1000. );
+          if( !logged_exhaustion_ ) {
+            ESP_LOGW( TAG, "BsbSensor Get %08X: retries exhausted, waiting %.0fs before retry", get_field_id(), retry_interval_ms_ / 1000. );
+            logged_exhaustion_ = true;
+            retry_start_timestamp_ = timestamp;
+          }
+          if( timestamp >= ( retry_start_timestamp_ + retry_interval_ms_ ) ) {
+            ESP_LOGI( TAG, "BsbSensor Get %08X: retrying after wait", get_field_id() );
             sent_get_ = 0;
+            logged_exhaustion_ = false;
             return true;
           }
+          return false;
         }
 
-        return ( sent_get_ < 5 ) && ( timestamp >= next_update_timestamp_ );
+        return timestamp >= next_update_timestamp_;
       }
 
       void schedule_next_regular_update( const uint32_t timestamp ) {
         sent_get_              = 0;
+        logged_exhaustion_     = false;
         next_update_timestamp_ = timestamp + update_interval_ms_;
       }
 
@@ -73,7 +80,9 @@ namespace esphome {
 
     private:
       uint32_t next_update_timestamp_ = 0;
+      uint32_t retry_start_timestamp_ = 0;
       uint16_t sent_get_              = 0;
+      bool     logged_exhaustion_     = false;
     };
 
     class BsbSensor
