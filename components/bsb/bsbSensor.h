@@ -93,6 +93,7 @@ namespace esphome {
       void       publish() override { publish_state( value_ ); }
 
       void set_enable_byte( const uint8_t enable_byte ) { this->enable_byte_ = enable_byte; }
+      uint8_t get_enable_byte() const { return this->enable_byte_; }
 
       void set_value( float value ) { this->value_ = value * factor_ / divisor_; }
 
@@ -150,6 +151,7 @@ namespace esphome {
       void       publish() override { publish_state( value_ ); }
 
       void set_enable_byte( const uint8_t enable_byte ) { this->enable_byte_ = enable_byte; }
+      uint8_t get_enable_byte() const { return this->enable_byte_; }
 
       void set_value( uint32_t value ) {
         if( value == on_value_ ) {

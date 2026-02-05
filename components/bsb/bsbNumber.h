@@ -33,6 +33,7 @@ namespace esphome {
       const bool get_broadcast() const { return this->broadcast_; }
 
       void set_enable_byte( const uint8_t enable_byte ) { this->enable_byte_ = enable_byte; }
+      uint8_t get_enable_byte() const { return this->enable_byte_; }
 
       void           set_update_interval( const uint32_t val ) { update_interval_ms_ = val; }
       const uint32_t get_update_interval() const { return update_interval_ms_; }

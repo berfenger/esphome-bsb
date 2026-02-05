@@ -160,22 +160,26 @@ namespace esphome {
               case SensorType::Sensor: {
                 BsbSensor* bsbSensor = ( BsbSensor* )sensor->second;
                 bsbSensor->schedule_next_regular_update( millis() );
-                switch( bsbSensor->get_value_type() ) {
-                  case BsbSensorValueType::UInt8:
-                    bsbSensor->set_value( packet->parse_as_uint8() );
-                    break;
-                  case BsbSensorValueType::Int8:
-                    bsbSensor->set_value( packet->parse_as_int8() );
-                    break;
-                  case BsbSensorValueType::Int16:
-                    bsbSensor->set_value( packet->parse_as_int16() );
-                    break;
-                  case BsbSensorValueType::Int32:
-                    bsbSensor->set_value( packet->parse_as_int32() );
-                    break;
-                  case BsbSensorValueType::Temperature:
-                    bsbSensor->set_value( packet->parse_as_temperature() );
-                    break;
+                if (packet->is_valid( bsbSensor->get_enable_byte() )) {
+                  switch( bsbSensor->get_value_type() ) {
+                    case BsbSensorValueType::UInt8:
+                      bsbSensor->set_value( packet->parse_as_uint8() );
+                      break;
+                    case BsbSensorValueType::Int8:
+                      bsbSensor->set_value( packet->parse_as_int8() );
+                      break;
+                    case BsbSensorValueType::Int16:
+                      bsbSensor->set_value( packet->parse_as_int16() );
+                      break;
+                    case BsbSensorValueType::Int32:
+                      bsbSensor->set_value( packet->parse_as_int32() );
+                      break;
+                    case BsbSensorValueType::Temperature:
+                      bsbSensor->set_value( packet->parse_as_temperature() );
+                      break;
+                  }
+                } else {
+                  bsbSensor->set_value( NAN );
                 }
                 bsbSensor->publish();
               } break;
@@ -199,21 +203,25 @@ namespace esphome {
               case SensorType::BinarySensor: {
                 BsbBinarySensor* bsbSensor = ( BsbBinarySensor* )sensor->second;
                 bsbSensor->schedule_next_regular_update( millis() );
-                switch( bsbSensor->get_value_type() ) {
-                  case BsbSensorValueType::UInt8:
-                    bsbSensor->set_value( packet->parse_as_uint8() );
-                    break;
-                  case BsbSensorValueType::Int8:
-                    bsbSensor->set_value( packet->parse_as_int8() );
-                    break;
-                  case BsbSensorValueType::Int16:
-                    bsbSensor->set_value( packet->parse_as_int16() );
-                    break;
-                  case BsbSensorValueType::Int32:
-                    bsbSensor->set_value( packet->parse_as_int32() );
-                    break;
+                if (packet->is_valid( bsbSensor->get_enable_byte() )) {
+                  switch( bsbSensor->get_value_type() ) {
+                    case BsbSensorValueType::UInt8:
+                      bsbSensor->set_value( packet->parse_as_uint8() );
+                      break;
+                    case BsbSensorValueType::Int8:
+                      bsbSensor->set_value( packet->parse_as_int8() );
+                      break;
+                    case BsbSensorValueType::Int16:
+                      bsbSensor->set_value( packet->parse_as_int16() );
+                      break;
+                    case BsbSensorValueType::Int32:
+                      bsbSensor->set_value( packet->parse_as_int32() );
+                      break;
+                  }
+                  bsbSensor->publish();
+                } else {
+                  bsbSensor->invalidate_state();
                 }
-                bsbSensor->publish();
               } break;
 #endif
             }
@@ -225,25 +233,30 @@ namespace esphome {
           for( auto number = range.first; number != range.second; ++number ) {
             BsbNumberBase* bsbNumber = number->second;
             bsbNumber->schedule_next_regular_update( millis() );
-            switch( bsbNumber->get_value_type() ) {
-              case BsbNumberValueType::UInt8:
-                bsbNumber->set_value( packet->parse_as_uint8() );
-                break;
-              case BsbNumberValueType::Int8:
-                bsbNumber->set_value( packet->parse_as_int8() );
-                break;
-              case BsbNumberValueType::Int16:
-                bsbNumber->set_value( packet->parse_as_int16() );
-                break;
-              case BsbNumberValueType::Int32:
-                bsbNumber->set_value( packet->parse_as_int32() );
-                break;
-              case BsbNumberValueType::Temperature:
-                bsbNumber->set_value( packet->parse_as_temperature() );
-                break;
-              default:
-                break;
+            if (packet->is_valid( bsbNumber->get_enable_byte() )) {
+              switch( bsbNumber->get_value_type() ) {
+                case BsbNumberValueType::UInt8:
+                  bsbNumber->set_value( packet->parse_as_uint8() );
+                  break;
+                case BsbNumberValueType::Int8:
+                  bsbNumber->set_value( packet->parse_as_int8() );
+                  break;
+                case BsbNumberValueType::Int16:
+                  bsbNumber->set_value( packet->parse_as_int16() );
+                  break;
+                case BsbNumberValueType::Int32:
+                  bsbNumber->set_value( packet->parse_as_int32() );
+                  break;
+                case BsbNumberValueType::Temperature:
+                  bsbNumber->set_value( packet->parse_as_temperature() );
+                  break;
+                default:
+                  break;
+              }
+            } else {
+              bsbNumber->set_value( NAN );
             }
+            bsbNumber->publish();
           }
         }
 

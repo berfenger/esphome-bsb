@@ -200,6 +200,12 @@ namespace esphome {
         return str;
       }
 
+      bool is_valid(uint8_t enable_byte) const {
+	return (enable_byte == 0x01 && payload.front() == 0x00) ||
+	       (enable_byte == 0x06 && payload.front() != 0x06) ||
+	       (enable_byte == 0x00);
+      }
+
       void create_packet() {
         buffer.clear();
         lenght = PacketSizeWithoutPyload + payload.size();
