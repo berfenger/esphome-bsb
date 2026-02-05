@@ -147,6 +147,10 @@ namespace esphome {
         : public BsbSensorBase
         , public binary_sensor::BinarySensor {
     public:
+      BsbBinarySensor() {
+        set_value_type( ( int )BsbSensorValueType::UInt8 );
+      }
+
       SensorType get_type() override { return SensorType::BinarySensor; }
       void       publish() override { publish_state( value_ ); }
 
@@ -154,23 +158,10 @@ namespace esphome {
       uint8_t get_enable_byte() const { return this->enable_byte_; }
 
       void set_value( uint32_t value ) {
-        if( value == on_value_ ) {
-          value_ = true;
-        }
-        if( value == off_value_ ) {
-          value_ = false;
-        }
+        value_ = value == 0x01 || value == 0xFF;
       }
 
-      void           set_on_value( const uint32_t on_value ) { this->on_value_ = on_value; }
-      const uint32_t get_on_value() const { return this->on_value_; }
-
-      void           set_off_value( const uint32_t off_value ) { this->off_value_ = off_value; }
-      const uint32_t get_off_value() const { return this->off_value_; }
-
     protected:
-      uint32_t on_value_    = 1;
-      uint32_t off_value_   = 0;
       uint8_t  enable_byte_ = 0x01;
 
       bool value_;

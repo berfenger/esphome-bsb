@@ -8,16 +8,7 @@ from esphome.const import (
 )
 
 CONF_FIELD_ID = "field_id"
-CONF_ON_VALUE = "on_value"
-CONF_OFF_VALUE = "off_value"
 CONF_ENABLE_BYTE = "enable_byte"
-
-CONF_BSB_TYPE_ENUM = {
-    "UINT8":0,
-    "INT8":1,
-    "INT16":2,
-    "INT32":3
-}
 
 BsbBinarySensor = bsb_ns.class_("BsbBinarySensor", binary_sensor.BinarySensor)
 
@@ -30,10 +21,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Required(CONF_FIELD_ID): cv.positive_int,
             cv.Optional(CONF_ENABLE_BYTE, default="1"): cv.one_of(0x00, 0x01, 0x06, int=True),
             cv.Optional(CONF_PARAMETER_NUMBER, default="0"): cv.positive_int,
-            cv.Optional(CONF_BSB_TYPE, default="INT8"): cv.enum(CONF_BSB_TYPE_ENUM, upper=True, space="_"),
             cv.Optional(CONF_UPDATE_INTERVAL, default="15min"): cv.update_interval,
-            cv.Optional(CONF_OFF_VALUE, default="0"): cv.positive_int,
-            cv.Optional(CONF_ON_VALUE, default="1"): cv.positive_int,
         }
     ),
     cv.has_exactly_one_key(CONF_FIELD_ID),
@@ -47,17 +35,8 @@ async def to_code(config):
     if CONF_FIELD_ID in config:
         cg.add(var.set_field_id(config[CONF_FIELD_ID]))
 
-    if CONF_ON_VALUE in config:
-        cg.add(var.set_on_value(config[CONF_ON_VALUE]))
-
-    if CONF_OFF_VALUE in config:
-        cg.add(var.set_off_value(config[CONF_OFF_VALUE]))
-
     if CONF_ENABLE_BYTE in config:
         cg.add(var.set_enable_byte(config[CONF_ENABLE_BYTE]))
-
-    if CONF_BSB_TYPE in config:
-        cg.add(var.set_value_type(config[CONF_BSB_TYPE]))
 
     if CONF_UPDATE_INTERVAL in config:
         cg.add(var.set_update_interval(config[CONF_UPDATE_INTERVAL]))

@@ -88,6 +88,18 @@ This is the main way to get data *out* of the heating system.
 | `type` | optional | | set to `DATETIME` to parse datetime values (parameter 0) |
 | `options` | optional | | mapping of numeric values to string options for enum parameters |
 
+## Binary sensors
+Read the value of a read only binary (on/off) sensor
+
+| Key | Class | Default | Description |
+| --- | --- | --- | --- |
+| `bsb_id` | required | | the BSB bus |
+| `field_id` | required | | the uint32 of the field ID, pe `0x053D0000` |
+| `parameter_number` | optional |  | this is not used currently, but it is good to document this number in the YAML. |
+| `update_interval` | optional | 15min | interval to refresh the value from the heating system. Beware that reading a lot of data with an high update frequency can overload the heating system or the bus |
+| `enable_byte`| optional | 0x01 | some parameters use a special enable byte, one of [0x00, 0x01, 0x06] |
+
+
 ### Datetime
 To read the current date/time from the heating system, use `type: datetime`:
 
