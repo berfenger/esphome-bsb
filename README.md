@@ -76,7 +76,7 @@ This is the main way to get data *out* of the heating system.
 | `parameter_number` | optional |  | this is not used currently, but it is good to document this number in the YAML. |
 | `factor`, `divisor`| optional | 1 | either use filters or these two parameters to calculate the actual value to send to the frontend. `value = value_on_the_bus * factor / divisor` |
 | `update_interval` | optional | 15min | interval to refresh the value from the heating system. Beware that reading a lot of data with an high update frequency can overload the heating system or the bus |
-| `enable_byte`| optional | 1 | some parameters use a special enable byte, here it can be defined |
+| `enable_byte`| optional | 0x01 | some parameters use a special enable byte, one of [0x00, 0x01, 0x06] |
 
 ## Text Sensors
 | Key | Class | Default | Description |
@@ -129,7 +129,7 @@ Selects allow setting enum parameters with human-readable options. The component
 | `field_id` | required | | the uint32 of the field ID, e.g. `0x2D3D0574` |
 | `parameter_number` | optional |  | this is not used currently, but it is good to document this number in the YAML. |
 | `update_interval` | optional | 15min | interval to refresh the value from the heating system |
-| `enable_byte`| optional | 1 | some parameters use a special enable byte |
+| `enable_byte`| optional | 0x01 | some parameters use a special enable byte, one of [0x00, 0x01, 0x06] |
 | `options` | required | | mapping of numeric values to string options |
 
 Example:
@@ -158,7 +158,7 @@ This is the main way to get data *into* the heating system.
 | `parameter_number` | optional |  | this is not used currently, but it is good to document this number in the YAML. |
 | `update_interval` | optional | 15min | interval to refresh the value from the heating system. Beware that reading a lot of data with an high update frequency can overload the heating system or the bus |
 | `factor`, `divisor`| optional | 1 | use these two parameters to calculate the actual value to send to the frontend. `value = value_on_the_bus * factor / divisor` |
-| `enable_byte`| optional | 1 | some parameters use a special enable byte, here it can be defined |
+| `enable_byte`| optional | 0x01 | some parameters use a special enable byte, one of [0x00, 0x01, 0x06] |
 | `broadcast` | optional | false |  to send as an INF telegram on the bus |
 | `step` | required | | the step in the frontend |
 | `min_value` | required | | the min value in the frontend |
