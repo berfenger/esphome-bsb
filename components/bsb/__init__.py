@@ -8,7 +8,7 @@ from esphome.const import (
 )
 from esphome import automation
 
-CODEOWNERS = ["@eringerli"]
+CODEOWNERS = ["@berfenger"]
 MULTI_CONF = True
 
 DEPENDENCIES = ["uart"]

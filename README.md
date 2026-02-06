@@ -15,10 +15,12 @@ This component can be added as an external component, as shown in the example co
 
 ```yaml
 external_components:
- - source: github://eringerli/esphome-bsb
+ - source: github://berfenger/esphome-bsb
      refresh: 0s
      components: [bsb]
 ```
+
+📝 This is a fork based on the work by [eringerli](https://github.com/eringerli/esphome-bsb) and [thiesgerken](https://github.com/thiesgerken/esphome-bsb). Kudos to them 🙌
 
 ## Arduino/ESP-IDF
 I had some problems with the arduino framework, especially with random reboots after a couple of hours, so I changed to ESP-IDF. The component is compatible with both, YMMV.
